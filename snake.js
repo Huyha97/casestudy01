@@ -215,11 +215,10 @@ function draw() {
     else if (snakeX === special.x && snakeY === special.y ) {
         score += 10;
         eat.play();
-        setInterval(appearLater,5000);
-        // special = {
-        //     x: Math.floor(Math.random() * 13 + 1) * box,
-        //     y: Math.floor(Math.random() * 10 + 3) * box
-        // }
+        special = {
+            x: Math.floor(Math.random() * 13 + 1) * box,
+            y: Math.floor(Math.random() * 10 + 3) * box
+        }
     }
         // we don't remove the tail
     else
