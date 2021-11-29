@@ -1,10 +1,5 @@
 
-// back-ground music
-window.addEventListener('click',musicplay);
-function musicplay(){
-    document.getElementById("audio").play();
-    window.removeEventListener('click',musicplay);
-}
+
 
 const cvs = document.getElementById("snake");
 const ctx = cvs.getContext("2d");
@@ -32,8 +27,8 @@ hotdogImg.src = "img/hotdog.png";
 const bananaImg = new Image();
 bananaImg.src = "img/banana.png";
 
-const noodleImg = new Image();
-noodleImg.src = "img/noodle.png";
+const moneyImg = new Image();
+moneyImg.src = "img/money.png";
 
 
 // game over function + win
@@ -48,15 +43,13 @@ document.addEventListener("change", gameOver);
 function gameOver() {
     document.getElementById("demo").innerHTML = "GAME OVER!!!";
 }
-//
 
-    function appearLater() {
-        special = {
-            x: Math.floor(Math.random() * 13 + 1) * box,
-            y: Math.floor(Math.random() * 10 + 3) * box
-        }
-    }
-
+// back-ground music
+window.addEventListener('click',musicplay);
+function musicplay(){
+    document.getElementById("audio").play();
+    window.removeEventListener('click',musicplay);
+}
 
 // // load audio files
 
@@ -108,6 +101,10 @@ let hotdog = {
     x: Math.floor(Math.random() * 12 + 1) * box,
     y: Math.floor(Math.random() * 10 + 3) * box
 }
+let money = {
+    x: Math.floor(Math.random() * 12 + 1) * box,
+    y: Math.floor(Math.random() * 10 + 3) * box
+}
 
 // create the score var
 
@@ -146,10 +143,20 @@ function tuDie(head,array){
     return false;
 }
 
+let high = 0 ;
+function drawHigh() {
+    for (let i = 0; i < localStorage.length; i++) {
+        if( Number(localStorage["score"+i]) > high){
+            high = Number(localStorage["score"+i])
+        }
+    }
+    document.getElementById("high").innerHTML = high;
+}
 // draw everything to the canvas
 
 function draw() {
 
+    drawHigh();
     function getRandomHex() {
 
         return Math.floor(Math.random() * 255);
@@ -165,9 +172,10 @@ function draw() {
     ctx.drawImage(ground, 0, 0);
 
     for (let i = 0; i < snake.length; i++) {
-        ctx.fillStyle = (i === 0) ? "black" : ((i % 2 === 0) ? getRandomColor() : "white");
+        ctx.fillStyle = (i ===0) ? getRandomColor() : ((i % 2 === 0) ? "gray" : "white");
         ctx.fillRect(snake[i].x, snake[i].y, box, box);
-        ctx.strokeStyle = getRandomColor();
+
+        ctx.strokeStyle = "black";
         ctx.strokeRect(snake[i].x, snake[i].y, box, box);
     }
     // draw food image
@@ -177,6 +185,7 @@ function draw() {
     ctx.drawImage(bananaImg, banana.x, banana.y);
     ctx.drawImage(hotdogImg, hotdog.x, hotdog.y);
     ctx.drawImage(beerImg, beer.x, beer.y);
+    ctx.drawImage(moneyImg, money.x, money.y);
 
 
     // old head position
@@ -192,7 +201,8 @@ function draw() {
 
     // if the snake eats the food
 
-    if (snakeX === food.x && snakeY === food.y|| snakeX === beer.x && snakeY === beer.y|| snakeX === banana.x && snakeY === banana.y|| snakeX === hotdog.x && snakeY === hotdog.y) {
+    if (snakeX === food.x && snakeY === food.y|| snakeX === beer.x && snakeY === beer.y||snakeX === money.x && snakeY === money.y||
+        snakeX === banana.x && snakeY === banana.y|| snakeX === hotdog.x && snakeY === hotdog.y) {
         score++;
         eat.play();
         food = {
@@ -211,22 +221,46 @@ function draw() {
             x: Math.floor(Math.random() * 6 + 10) * box,
             y: Math.floor(Math.random() * 2 + 9) * box
         };
+        money = {
+            x: Math.floor(Math.random() * 6 + 10) * box,
+            y: Math.floor(Math.random() * 2 + 9) * box
+        };
     }
     else if (snakeX === special.x && snakeY === special.y ) {
-        score += 10;
+        score += 15;
         eat.play();
         special = {
             x: Math.floor(Math.random() * 13 + 1) * box,
             y: Math.floor(Math.random() * 10 + 3) * box
         }
+        food = {
+            x: Math.floor(Math.random() * 3 +9) * box,
+            y: Math.floor(Math.random() * 2 + 10) * box
+        };
+        hotdog = {
+            x: Math.floor(Math.random() * 16 + 1) * box,
+            y: Math.floor(Math.random() * 14 + 3) * box
+        };
+        beer = {
+            x: Math.floor(Math.random() * 10 + 2) * box,
+            y: Math.floor(Math.random() * 15+ 3) * box
+        };
+        banana = {
+            x: Math.floor(Math.random() * 6 + 10) * box,
+            y: Math.floor(Math.random() * 2 + 9) * box
+        };
+        money = {
+            x: Math.floor(Math.random() * 6 + 10) * box,
+            y: Math.floor(Math.random() * 2 + 9) * box
+        };
     }
-        // we don't remove the tail
+    // we don't remove the tail
     else
-        {
-            // remove the tail
-            snake.pop();
-        }
+    {
+        // remove the tail
 
+        snake.pop();
+    }
 
     let newHead = {
         x : snakeX,
@@ -239,10 +273,12 @@ function draw() {
         dead.play();
         document.getElementById("audio").pause();
         gameOver();
+        localStorage.setItem("score" +localStorage.length,score);
     }
     if (score >= 100) {
         clearInterval(game);
         win();
+        localStorage.setItem("score" +localStorage.length,score);
     }
     snake.unshift(newHead);
     // score display area!!!
@@ -250,14 +286,12 @@ function draw() {
     ctx.font = "60px Changa one";
     ctx.fillText(score,2*box,1.5*box);
 
-
 }
 
 
 // call draw function every 100 ms
 
 let game = setInterval(draw,100);
-
 
 
 
