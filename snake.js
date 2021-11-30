@@ -83,8 +83,6 @@ snake[0] = {
        x: Math.floor(Math.random() * 17 + 1) * box,
       y: Math.floor(Math.random() * 10 + 3) * box
      }
-
-
 let special = {
         x: Math.floor(Math.random() * 15 + 1) * box,
         y: Math.floor(Math.random() * 10 + 6) * box
